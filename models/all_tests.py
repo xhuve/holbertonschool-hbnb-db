@@ -1,6 +1,6 @@
 import unittest
 import datetime
-from BaseModel import BaseModel
+from models.base_model import BaseModel
 from City import City
 from Place import Place
 from Country import Country
