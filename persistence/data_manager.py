@@ -10,10 +10,12 @@ class DataManager(IPersistenceManager):
         try:
             if isinstance(entity, BaseModel):
                 user = entity.__dict__
-                if entity.__class__.__name__ in DataManager.storage.keys():
-                    DataManager.storage[entity.__class__.__name__].append(user)
+                class_type = entity.__class__.__name__
+
+                if class_type in DataManager.storage.keys():
+                    DataManager.storage[class_type].append(user)
                 else:
-                    DataManager.storage[entity.__class__.__name__] = [user]
+                    DataManager.storage[class_type] = [user]
                 return user
             else:
                 raise TypeError()
@@ -29,16 +31,18 @@ class DataManager(IPersistenceManager):
             print(e)
 
     def update(self, entity):
+        class EntityNotFoundError(Exception):
+            pass
         try:
             class_type = f"{entity.__class__.__name__}"
             print(entity.id)
             for idx, user in enumerate(DataManager.storage[class_type]):
                 if user["id"] == entity.id:
-                    print("reached here")
-                    print(entity.__dict__)
-                    print(DataManager.storage[class_type][idx])
                     DataManager.storage[class_type][idx] = entity.__dict__
                     return entity.__dict__
+            raise EntityNotFoundError("Bad Request")
+        except EntityNotFoundError as e:
+            raise e
         except Exception as e:
             print(e)
 
