@@ -43,8 +43,12 @@ def update_user(user_id):
         last_name=jData["last_name"],
     )
     user.id = int(user_id)
-    dm.update(user)
-    return jsonify("Updated")
+    try:
+        dm.update(user)
+        return jsonify("Updated")
+    except Exception:
+        return "Bad Request", 400
+
 
 @app.route('/users/<string:user_id>', methods=['DELETE'])
 def delete_user(user_id):
