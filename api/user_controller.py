@@ -5,10 +5,18 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 from flask import Flask, request, jsonify
 from persistence.data_manager import DataManager
 from models.users import Users
-
+from email_validator import validate_email, EmailNotValidError
 
 app = Flask(__name__)
 dm = DataManager()
+
+def checkEmail(email):
+    try:
+        v = validate_email(email)
+        return v["email"]
+    except EmailNotValidError as e:
+        print(str(e))
+        return False
 
 @app.route('/users', methods=['GET'])
 def get_all_users():
@@ -20,8 +28,11 @@ def create_user():
     for field in ["email", "first_name", "last_name"]:
         if not isinstance(jData[field], str):
             return jsonify("Bad Request"), 400
+    if not checkEmail(jData["email"]):
+        return jsonify("Bad Request"), 400
     if jData["email"] in Users.email_list:
         return jsonify("Conflict"), 409
+
     user = Users(
         email=jData["email"],
         password="",
@@ -37,6 +48,9 @@ def get_user(user_id):
 @app.route('/users/<string:user_id>', methods=['PUT'])
 def update_user(user_id):
     jData = request.get_json()
+    if not checkEmail(jData["email"]):
+        return jsonify("Bad Request"), 400
+
     user = Users(
         email=jData["email"],
         first_name=jData["first_name"],

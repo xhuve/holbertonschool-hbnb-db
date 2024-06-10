@@ -33,6 +33,7 @@ class DataManager(IPersistenceManager):
     def update(self, entity):
         class EntityNotFoundError(Exception):
             pass
+
         try:
             class_type = f"{entity.__class__.__name__}"
             print(entity.id)
