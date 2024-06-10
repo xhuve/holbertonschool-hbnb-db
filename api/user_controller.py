@@ -5,7 +5,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 from flask import Flask, request, jsonify
 from persistence.data_manager import DataManager
 from models.users import Users
-from email_validator import validate_email, EmailNotValidError
+from email_validator import validate_email, EmailNotValidError # type: ignore
 
 app = Flask(__name__)
 dm = DataManager()
@@ -43,7 +43,7 @@ def create_user():
 
 @app.route('/users/<string:user_id>', methods=['GET'])
 def get_user(user_id):
-    return dm.get(user_id, "Users")
+    return dm.get(int(user_id), "Users")
 
 @app.route('/users/<string:user_id>', methods=['PUT'])
 def update_user(user_id):
