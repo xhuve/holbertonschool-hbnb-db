@@ -1,7 +1,7 @@
 from persistence.IPersistenceManager import IPersistenceManager
 from models.base_model import BaseModel
 from models.users import Users
-import json
+from models.city import City
 class DataManager(IPersistenceManager):
 
     storage = {}
@@ -76,3 +76,13 @@ user2.id = 2
 
 DataManager.save(DataManager, user1)
 DataManager.save(DataManager, user2)
+
+seeder = [
+    City(name="Chicago", population=2716000, country_code="USA"),
+    City(name="Tokyo", population=13929286, country_code="JPN"),
+    City(name="Paris", population=2141000, country_code="FRA")
+]
+
+for idx, value in enumerate(seeder):
+    value.id = idx
+    DataManager.save(DataManager, value)
