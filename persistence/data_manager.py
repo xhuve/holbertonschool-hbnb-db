@@ -2,6 +2,7 @@ from persistence.IPersistenceManager import IPersistenceManager
 from models.base_model import BaseModel
 from models.users import Users
 from models.city import City
+from models.country import Country
 class DataManager(IPersistenceManager):
 
     storage = {}
@@ -78,11 +79,29 @@ DataManager.save(DataManager, user1)
 DataManager.save(DataManager, user2)
 
 seeder = [
+    City(name="New York", population=8419000, country_code="USA"),
+    City(name="Los Angeles", population=3980000, country_code="USA"),
     City(name="Chicago", population=2716000, country_code="USA"),
     City(name="Tokyo", population=13929286, country_code="JPN"),
-    City(name="Paris", population=2141000, country_code="FRA")
+    City(name="Paris", population=2141000, country_code="FRA"),
+    City(name="London", population=8982000, country_code="GBR"),
+    City(name="Berlin", population=3748000, country_code="DEU"),
+    City(name="Sydney", population=5312000, country_code="AUS"),
+    City(name="Toronto", population=2731000, country_code="CAN"),
+    City(name="São Paulo", population=12300000, country_code="BRA"),
+    Country(name="United States", population=331002651, code="USA"),
+    Country(name="Canada", population=37742154, code="CAN"),
+    Country(name="United Kingdom", population=67886011, code="GBR"),
+    Country(name="Germany", population=83783942, code="DEU"),
+    Country(name="France", population=65273511, code="FRA"),
+    Country(name="Japan", population=126476461, code="JPN"),
+    Country(name="Australia", population=25499884, code="AUS"),
+    Country(name="Brazil", population=212559417, code="BRA"),
+    Country(name="China", population=1439323776, code="CHN"),
+    Country(name="India", population=1380004385, code="IND")
 ]
 
 for idx, value in enumerate(seeder):
     value.id = idx
     DataManager.save(DataManager, value)
+
