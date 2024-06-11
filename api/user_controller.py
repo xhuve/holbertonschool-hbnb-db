@@ -41,14 +41,14 @@ def create_user():
     )
     return dm.save(user), 201
 
-@app.route('/users/<string:user_id>', methods=['GET'])
+@app.route('/users/<int:user_id>', methods=['GET'])
 def get_user(user_id):
     return dm.get(int(user_id), "Users")
 
-@app.route('/users/<string:user_id>', methods=['PUT'])
+@app.route('/users/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
     jData = request.get_json()
-    req_city = dm.get(user_id, "City")
+    req_user = dm.get(user_id, "User")
 
     if not checkEmail(jData["email"]):
         return jsonify("Bad Request"), 400
@@ -60,7 +60,7 @@ def update_user(user_id):
     )
 
     user.id = user_id
-    user.created_at = req_city["created_at"]
+    user.created_at = req_user["created_at"]
 
     try:
         dm.update(user)
@@ -68,7 +68,7 @@ def update_user(user_id):
     except Exception:
         return "Bad Request", 400
 
-@app.route('/users/<string:user_id>', methods=['DELETE'])
+@app.route('/users/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
     dm.delete(user_id, "Users")
     return jsonify("Deleted"), 204
