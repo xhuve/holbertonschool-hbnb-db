@@ -15,4 +15,4 @@ class Place(BaseModel):
         self.max_guests = max_guests
         self.amenity_id = amenity_id
         self.city_id = city_id
-        self.user_id = user_id
+        self.host_id = user_id

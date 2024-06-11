@@ -9,5 +9,5 @@ class Amenity(BaseModel):
         self.name = name
         self.description = description
         self.place_id = place_id
-        self.amenity_list.add("name")
+        self.amenity_list.add(name)
 
