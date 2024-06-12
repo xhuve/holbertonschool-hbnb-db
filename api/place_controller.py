@@ -1,26 +1,35 @@
 import sys
 import os
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 from flask import Flask, request, jsonify
 from persistence.data_manager import DataManager
 from models.place import Place
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 app = Flask(__name__)
 dm = DataManager()
 
 @app.route('/places', methods=['GET'])
 def get_all_places():
-    return DataManager.storage["Places"]
+    return DataManager.storage["Place"]
 
 @app.route('/places', methods=['POST'])
 def create_place():
     jData = request.get_json()
-    if not -90 < jData["latitude"] < 90 or not isinstance(jData["price_per_night"], int):
+    if not -90 < jData["latitude"] < 90 or not isinstance(jData["price_per_night"], float):
+        print("latitude error")
         return jsonify("Bad Request"), 400
     for field in ['number_of_rooms', 'bathrooms', 'max_guests']:
         if jData[field] < 0:
             return jsonify("Bad Request"), 400
+
+    all_city_id = [value for value in DataManager.storage["City"] if value["id"] == jData["city_id"]]
+    if not all_city_id:
+        return jsonify("Bad Request"), 400
+
+    all_amenity_id = [value for value in DataManager.storage["Amenity"] if value["id"] in jData["amenity_id"]]
+    if not all_amenity_id:
+        return jsonify("Bad Request"), 400
 
     place = Place(
         name = jData['name'],
@@ -31,7 +40,10 @@ def create_place():
         price_per_night = jData['price_per_night'],
         number_of_rooms = jData["number_of_rooms"],
         bathrooms = jData["bathrooms"],
-        max_guests = jData["max_guests"]
+        max_guests = jData["max_guests"],
+        amenity_id = jData["amenity_id"],
+        city_id = jData["city_id"],
+        host_id = jData["host_id"]
     )
     return dm.save(place), 201
 
@@ -42,7 +54,22 @@ def get_place(place_id):
 @app.route('/places/<int:place_id>', methods=['PUT'])
 def update_place(place_id):
     jData = request.get_json()
+    if not -90 < jData["latitude"] < 90 or not isinstance(jData["price_per_night"], int):
+        return jsonify("Bad Request"), 400
+    for field in ['number_of_rooms', 'bathrooms', 'max_guests']:
+        if jData[field] < 0:
+            return jsonify("Bad Request"), 400
+
     req_city = dm.get(place_id, "Place")
+
+    all_city_id = [value for value in DataManager.storage["City"] if value["id"] == jData["city_id"]]
+    if not all_city_id:
+        return jsonify("Bad Request"), 400
+
+    all_amenity_id = [value for value in DataManager.storage["Amenity"] if value["id"] in jData["amenity_ids"]]
+    if not all_amenity_id:
+        return jsonify("Bad Request"), 400
+
 
     place = Place(
         name = jData['name'],

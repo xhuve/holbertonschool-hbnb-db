@@ -26,7 +26,7 @@ def create_city():
     for item in dictionary:
         if item["name"] == jData["name"]:
             return jsonify("Bad Request"), 400
-    
+
     city = City(
         name=jData["name"],
         population=jData["population"],
@@ -36,7 +36,7 @@ def create_city():
 
 @app.route('/cities/<int:city_id>', methods=['GET'])
 def get_city(city_id):
-    curr_city = dm.get(int(city_id), "City")
+    curr_city = dm.get(city_id, "City")
     return { "name": curr_city["name"], "country_code": curr_city["country_code"]}
 
 @app.route('/cities/<int:city_id>', methods=['PUT'])
@@ -50,7 +50,7 @@ def update_city(city_id):
         country_code=jData['country_code']
     )
 
-    city.id = int(city_id)
+    city.id = city_id
     city.created_at = req_city["created_at"]
 
     try:

@@ -112,49 +112,62 @@ seeder = [
     Amenity(name="Room Service", description="24-hour room service available.", place_id="130"),
     Amenity(name="Laundry Service", description="On-site laundry and dry cleaning services.", place_id="123"),
     Place(
-        name="Cozy Mountain Cabin",
-        description="A beautiful cabin nestled in the mountains, perfect for a weekend getaway. Features stunning views and modern amenities.",
-        address="123 Mountain Road, Alpine Village, CA 90210",
-        longitude=-118.2437,
-        latitude=34.0522,
-        price_per_night=150.00,
-        number_of_rooms=3,
-        bathrooms=2,
-        max_guests=6
-    ),
-    Place(
-        name="Urban Loft Apartment",
-        description="A chic loft apartment located in the heart of the city. Close to major attractions and public transport.",
-        address="456 City Center Blvd, Downtown, NY 10001",
-        longitude=-73.935242,
-        latitude=40.730610,
-        price_per_night=200.00,
-        number_of_rooms=1,
-        bathrooms=1,
-        max_guests=2
-    ),
-    Place(
-        name="Beachfront Villa",
-        description="Luxurious villa with private beach access. Ideal for family vacations or romantic getaways.",
-        address="789 Ocean Drive, Malibu, CA 90265",
-        longitude=-118.7848,
-        latitude=34.0259,
-        price_per_night=500.00,
+        name="Luxury Penthouse in New York",
+        description="A breathtaking penthouse with panoramic views of Manhattan. Featuring modern amenities and luxurious decor.",
+        address="456 Park Ave, New York, NY 10022",
+        longitude=-73.9725,
+        latitude=40.7648,
+        price_per_night=1500.00,
         number_of_rooms=4,
         bathrooms=3,
-        max_guests=8
+        max_guests=8,
+        amenity_id=(1, 2, 5, 6, 9),  # Free Wi-Fi, Swimming Pool, Air Conditioning, Breakfast Included, Room Service
+        city_id=1,  # New York
+        host_id=1  # Hosted by user1
     ),
     Place(
-        name="Rustic Country House",
-        description="A charming country house surrounded by nature. Perfect for a peaceful retreat.",
-        address="321 Countryside Lane, Greenfield, VT 05301",
-        longitude=-72.675,
-        latitude=42.8465,
-        price_per_night=120.00,
+        name="Beachfront Villa in Los Angeles",
+        description="A stunning villa located right on the Malibu beachfront. Perfect for a family retreat or a romantic getaway.",
+        address="789 Ocean Ave, Malibu, CA 90265",
+        longitude=-118.8100,
+        latitude=34.0256,
+        price_per_night=1200.00,
+        number_of_rooms=5,
+        bathrooms=4,
+        max_guests=10,
+        amenity_id=(1, 2, 4, 5, 7),  # Free Wi-Fi, Swimming Pool, Parking, Air Conditioning, Pet-Friendly
+        city_id=2,  # Los Angeles
+        host_id=2  # Hosted by user2
+    ),
+    Place(
+        name="Chic Apartment in Tokyo",
+        description="A modern apartment in the heart of Tokyo. Ideal for business travelers and tourists.",
+        address="123 Shibuya Crossing, Tokyo, Japan",
+        longitude=139.7006,
+        latitude=35.6895,
+        price_per_night=300.00,
         number_of_rooms=2,
         bathrooms=1,
-        max_guests=4
-    )
+        max_guests=4,
+        amenity_id=(1, 5, 8, 10),  # Free Wi-Fi, Air Conditioning, Spa, Laundry Service
+        city_id=4,  # Tokyo
+        host_id=1  # Hosted by user1
+    ),
+    Place(
+        name="Historic Home in Paris",
+        description="A charming historic home in the heart of Paris. Experience the elegance of French architecture with modern comforts.",
+        address="12 Rue de Rivoli, Paris, France",
+        longitude=2.3500,
+        latitude=48.8566,
+        price_per_night=700.00,
+        number_of_rooms=3,
+        bathrooms=2,
+        max_guests=6,
+        amenity_id=(1, 4, 5, 6, 8),  # Free Wi-Fi, Parking, Air Conditioning, Breakfast Included, Spa
+        city_id=5,  # Paris
+        host_id=2  # Hosted by user2
+    ),
+
 ]
 
 for idx, value in enumerate(seeder):
