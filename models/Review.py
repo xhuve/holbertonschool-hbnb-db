@@ -2,8 +2,10 @@ from models.base_model import BaseModel
 
 class Review(BaseModel):
 
-    def __init__(self, feedback="", rating="", comment="", place_id=None, user_id=None):
+    def __init__(self, obj_id=None, feedback="", rating="", comment="", place_id=None, user_id=None):
         super().__init__()
+        if obj_id != None:
+            self.id = obj_id
         self.feedback = feedback
         self.rating = rating
         self.comment = comment

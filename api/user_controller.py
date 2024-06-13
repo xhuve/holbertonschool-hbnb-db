@@ -2,13 +2,14 @@ import sys
 import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-from flask import Flask, request, jsonify
+
+from flask import request, jsonify, Blueprint
 from persistence.data_manager import DataManager
 from models.users import Users
 from email_validator import validate_email, EmailNotValidError # type: ignore
 
-app = Flask(__name__)
 dm = DataManager()
+user_bp = Blueprint('user', __name__)
 
 def checkEmail(email):
     try:
@@ -18,11 +19,11 @@ def checkEmail(email):
         print(str(e))
         return False
 
-@app.route('/users', methods=['GET'])
+@user_bp.route('/users', methods=['GET'])
 def get_all_users():
     return DataManager.storage["Users"]
 
-@app.route('/users', methods=['POST'])
+@user_bp.route('/users', methods=['POST'])
 def create_user():
     jData = request.get_json()
     for field in ["email", "first_name", "last_name"]:
@@ -41,11 +42,11 @@ def create_user():
     )
     return dm.save(user), 201
 
-@app.route('/users/<int:user_id>', methods=['GET'])
+@user_bp.route('/users/<int:user_id>', methods=['GET'])
 def get_user(user_id):
-    return dm.get(int(user_id), "Users")
+    return dm.get(user_id, "Users")
 
-@app.route('/users/<int:user_id>', methods=['PUT'])
+@user_bp.route('/users/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
     jData = request.get_json()
     req_user = dm.get(user_id, "User")
@@ -68,10 +69,19 @@ def update_user(user_id):
     except Exception:
         return "Bad Request", 400
 
-@app.route('/users/<int:user_id>', methods=['DELETE'])
+@user_bp.route('/users/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
     dm.delete(user_id, "Users")
     return jsonify("Deleted"), 204
 
-if __name__ == "__main__":
-    app.run(debug=True)
+@user_bp.route('/users/<int:user_id>/reviews', methods=['GET'])
+def get_user_reviews(user_id):
+    all_reviews = DataManager.storage["Review"]
+
+    if not user_id in [value["id"] for value in DataManager.storage["Users"]]:
+        return jsonify("User not found"), 404
+
+    user_reviews = [review for review in all_reviews if review["user_id"] == user_id]
+
+    return jsonify(user_reviews), 200
+

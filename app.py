@@ -1,0 +1,18 @@
+from flask import Flask
+
+from api.amenity_controller import amenity_bp
+from api.country_controller import country_bp
+from api.city_controller import city_bp
+from api.place_controller import place_bp
+from api.user_controller import user_bp
+
+app = Flask(__name__)
+
+app.register_blueprint(amenity_bp)
+app.register_blueprint(country_bp)
+app.register_blueprint(city_bp)
+app.register_blueprint(place_bp)
+app.register_blueprint(user_bp)
+
+if __name__ == "__main__":
+    app.run(debug=True)

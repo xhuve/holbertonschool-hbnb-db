@@ -5,6 +5,7 @@ from models.city import City
 from models.country import Country
 from models.amenity import Amenity
 from models.place import Place
+from models.review import Review
 class DataManager(IPersistenceManager):
 
     storage = {}
@@ -112,6 +113,7 @@ seeder = [
     Amenity(name="Room Service", description="24-hour room service available.", place_id="130"),
     Amenity(name="Laundry Service", description="On-site laundry and dry cleaning services.", place_id="123"),
     Place(
+        obj_id=0,
         name="Luxury Penthouse in New York",
         description="A breathtaking penthouse with panoramic views of Manhattan. Featuring modern amenities and luxurious decor.",
         address="456 Park Ave, New York, NY 10022",
@@ -126,6 +128,7 @@ seeder = [
         host_id=1  # Hosted by user1
     ),
     Place(
+        obj_id=1,
         name="Beachfront Villa in Los Angeles",
         description="A stunning villa located right on the Malibu beachfront. Perfect for a family retreat or a romantic getaway.",
         address="789 Ocean Ave, Malibu, CA 90265",
@@ -135,11 +138,12 @@ seeder = [
         number_of_rooms=5,
         bathrooms=4,
         max_guests=10,
-        amenity_id=(1, 2, 4, 5, 7),  # Free Wi-Fi, Swimming Pool, Parking, Air Conditioning, Pet-Friendly
+        amenity_id=(1, 2, 4, 5, 7),
         city_id=2,  # Los Angeles
         host_id=2  # Hosted by user2
     ),
     Place(
+        obj_id=2,
         name="Chic Apartment in Tokyo",
         description="A modern apartment in the heart of Tokyo. Ideal for business travelers and tourists.",
         address="123 Shibuya Crossing, Tokyo, Japan",
@@ -149,11 +153,12 @@ seeder = [
         number_of_rooms=2,
         bathrooms=1,
         max_guests=4,
-        amenity_id=(1, 5, 8, 10),  # Free Wi-Fi, Air Conditioning, Spa, Laundry Service
+        amenity_id=(1, 5, 8, 10),
         city_id=4,  # Tokyo
-        host_id=1  # Hosted by user1
+        host_id=1
     ),
     Place(
+        obj_id=3,
         name="Historic Home in Paris",
         description="A charming historic home in the heart of Paris. Experience the elegance of French architecture with modern comforts.",
         address="12 Rue de Rivoli, Paris, France",
@@ -163,11 +168,34 @@ seeder = [
         number_of_rooms=3,
         bathrooms=2,
         max_guests=6,
-        amenity_id=(1, 4, 5, 6, 8),  # Free Wi-Fi, Parking, Air Conditioning, Breakfast Included, Spa
-        city_id=5,  # Paris
-        host_id=2  # Hosted by user2
+        amenity_id=(1, 4, 5, 6, 8),  
+        city_id=5,
+        host_id=2
     ),
-
+    Review(
+        obj_id=1,
+        feedback="Excellent stay!",
+        rating="5",
+        comment="The host was very accommodating, and the property was spotless. Highly recommend!",
+        place_id=2,
+        user_id=2
+    ),
+    Review(
+        obj_id=2,
+        feedback="Good experience",
+        rating="4",
+        comment="Great location and amenities, but a bit noisy during the night.",
+        place_id=3,
+        user_id=1
+    ),
+    Review(
+        obj_id=3,
+        feedback="Could be better",
+        rating="3",
+        comment="The place was okay, but it didn't meet my expectations in terms of cleanliness.",
+        place_id=3,
+        user_id=1
+    )
 ]
 
 for idx, value in enumerate(seeder):
