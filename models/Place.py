@@ -2,8 +2,10 @@ from models.base_model import BaseModel
 
 class Place(BaseModel):
 
-    def __init__(self, name="", description="", address="", longitude=0.0, latitude=0.0, price_per_night=0.0, number_of_rooms=0, bathrooms=0, max_guests=0, amenity_id=(), city_id="", host_id=""):
+    def __init__(self, obj_id=None, name="", description="", address="", longitude=0.0, latitude=0.0, price_per_night=0.0, number_of_rooms=0, bathrooms=0, max_guests=0, amenity_id=(), city_id="", host_id=""):
         super().__init__()
+        if obj_id != None:
+            self.id = obj_id
         self.name = name
         self.description = description
         self.address = address

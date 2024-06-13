@@ -2,19 +2,19 @@ import sys
 import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-from flask import Flask, request, jsonify
+from flask import request, jsonify, Blueprint
 from persistence.data_manager import DataManager
 from models.place import Place
 from models.review import Review
 
-app = Flask(__name__)
 dm = DataManager()
+place_bp = Blueprint('place_bp', __name__)
 
-@app.route('/places', methods=['GET'])
+@place_bp.route('/places', methods=['GET'])
 def get_all_places():
     return DataManager.storage["Place"]
 
-@app.route('/places', methods=['POST'])
+@place_bp.route('/places', methods=['POST'])
 def create_place():
     jData = request.get_json()
     if not -90 < jData["latitude"] < 90 or not isinstance(jData["price_per_night"], float):
@@ -48,11 +48,11 @@ def create_place():
     )
     return dm.save(place), 201
 
-@app.route('/places/<int:place_id>', methods=['GET'])
+@place_bp.route('/places/<int:place_id>', methods=['GET'])
 def get_place(place_id):
     return dm.get(place_id, "Place")
 
-@app.route('/places/<int:place_id>', methods=['PUT'])
+@place_bp.route('/places/<int:place_id>', methods=['PUT'])
 def update_place(place_id):
     jData = request.get_json()
     if not -90 < jData["latitude"] < 90 or not isinstance(jData["price_per_night"], int):
@@ -92,12 +92,12 @@ def update_place(place_id):
     except Exception:
         return jsonify("Bad Request"), 400
 
-@app.route('/places/<int:place_id>', methods=['DELETE'])
+@place_bp.route('/places/<int:place_id>', methods=['DELETE'])
 def delete_place(place_id):
     dm.delete(place_id, "Place")
     return jsonify("Deleted"), 204
 
-@app.route("/places/<int:place_id>}/reviews", methods=['POST'])
+@place_bp.route("/places/<int:place_id>}/reviews", methods=['POST'])
 def create_review(place_id):
     jData = request.get_json()
 
@@ -111,5 +111,13 @@ def create_review(place_id):
 
     return dm.save(review), 201
 
-if __name__ == "__main__":
-    app.run(debug=True)
+@place_bp.route("/places/<int:place_id>/reviews", methods=['GET'])
+def get_place_reviews(place_id):
+    all_reviews = DataManager.storage["Review"]
+
+    if not place_id in [value["id"] for value in DataManager.storage["Users"]]:
+        return jsonify("User not found"), 404
+
+    user_reviews = [review for review in all_reviews if review["place_id"] == place_id]
+
+    return jsonify(user_reviews), 200
