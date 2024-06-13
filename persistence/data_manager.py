@@ -123,9 +123,9 @@ seeder = [
         number_of_rooms=4,
         bathrooms=3,
         max_guests=8,
-        amenity_id=(1, 2, 5, 6, 9),  # Free Wi-Fi, Swimming Pool, Air Conditioning, Breakfast Included, Room Service
-        city_id=1,  # New York
-        host_id=1  # Hosted by user1
+        amenity_id=(1, 2, 5, 6, 9),
+        city_id=1,
+        host_id=1
     ),
     Place(
         obj_id=1,
@@ -139,8 +139,8 @@ seeder = [
         bathrooms=4,
         max_guests=10,
         amenity_id=(1, 2, 4, 5, 7),
-        city_id=2,  # Los Angeles
-        host_id=2  # Hosted by user2
+        city_id=2,
+        host_id=2
     ),
     Place(
         obj_id=2,
@@ -154,7 +154,7 @@ seeder = [
         bathrooms=1,
         max_guests=4,
         amenity_id=(1, 5, 8, 10),
-        city_id=4,  # Tokyo
+        city_id=4,
         host_id=1
     ),
     Place(
@@ -199,6 +199,7 @@ seeder = [
 ]
 
 for idx, value in enumerate(seeder):
-    value.id = idx
+    if isinstance(value.id, str):
+        value.id = idx
     DataManager.save(DataManager, value)
 
