@@ -5,6 +5,7 @@ from api.country_controller import country_bp
 from api.city_controller import city_bp
 from api.place_controller import place_bp
 from api.user_controller import user_bp
+from api.review_controller import review_bp
 
 app = Flask(__name__)
 
@@ -13,6 +14,7 @@ app.register_blueprint(country_bp)
 app.register_blueprint(city_bp)
 app.register_blueprint(place_bp)
 app.register_blueprint(user_bp)
+app.register_blueprint(review_bp)
 
 if __name__ == "__main__":
     app.run(debug=True)
