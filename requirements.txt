@@ -1,3 +1,5 @@
-flask==3.0.2
-email-validator==2.1.1
-gunicorn=22.0.0
+python3
+py3-pip
+py3-flask
+py3-email-validator
+py-gunicorn
