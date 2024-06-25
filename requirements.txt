@@ -3,3 +3,5 @@ py3-pip
 py3-flask
 py3-email-validator
 py-gunicorn
+py-SQLAlchemy
+py-Flask-SQLAlchemy

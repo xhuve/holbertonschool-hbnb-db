@@ -5,7 +5,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 from flask import request, jsonify, Blueprint
 from persistence.data_manager import DataManager
-from models.users import Users
+from models.user import User
 from email_validator import validate_email, EmailNotValidError # type: ignore
 
 dm = DataManager()
@@ -31,10 +31,10 @@ def create_user():
             return jsonify("Bad Request"), 400
     if not checkEmail(jData["email"]):
         return jsonify("Bad Request"), 400
-    if jData["email"] in Users.email_list:
+    if jData["email"] in User.email_list:
         return jsonify("Conflict"), 409
 
-    user = Users(
+    user = User(
         email=jData["email"],
         password="",
         first_name=jData["first_name"],
@@ -44,7 +44,7 @@ def create_user():
 
 @user_bp.route('/users/<int:user_id>', methods=['GET'])
 def get_user(user_id):
-    return dm.get(user_id, "Users")
+    return dm.get(user_id, "User")
 
 @user_bp.route('/users/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
@@ -54,7 +54,7 @@ def update_user(user_id):
     if not checkEmail(jData["email"]):
         return jsonify("Bad Request"), 400
 
-    user = Users(
+    user = User(
         email=jData["email"],
         first_name=jData["first_name"],
         last_name=jData["last_name"],

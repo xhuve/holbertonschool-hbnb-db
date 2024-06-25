@@ -1,6 +1,6 @@
 from persistence.IPersistenceManager import IPersistenceManager
 from models.base_model import BaseModel
-from models.users import Users
+from models.user import User
 from models.city import City
 from models.country import Country
 from models.amenity import Amenity
@@ -57,7 +57,7 @@ class DataManager(IPersistenceManager):
         except Exception as e:
             print(e)
 
-user1 = Users(
+user1 = User(
     email="john.doe@example.com",
     password="password123",
     first_name="John",
@@ -68,7 +68,7 @@ user1 = Users(
 user1.id = 1
 
 # User 2
-user2 = Users(
+user2 = User(
     email="jane.smith@example.com",
     password="password456",
     first_name="Jane",
