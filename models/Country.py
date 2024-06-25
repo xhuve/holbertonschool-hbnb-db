@@ -1,12 +1,14 @@
 from models.base_model import BaseModel
+from sqlalchemy import String, Integer
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from models.city import City
+
 
 class Country(BaseModel):
+    __tablename__ = 'countries'
 
-    all_country_codes = set()
+    name: Mapped[String] = mapped_column(String)
+    population: Mapped[Integer] = mapped_column(Integer)
+    code: Mapped[Integer] = mapped_column(String)
 
-    def __init__(self, name="", population=0, code=None):
-        super().__init__()
-        self.name = name
-        self.population = population
-        self.code = code
-        self.all_country_codes.add(code)
+    cities: Mapped[list[City]] = relationship('City', back_populates="country")
