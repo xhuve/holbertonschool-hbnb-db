@@ -12,16 +12,17 @@ from api.city_controller import city_bp
 from api.place_controller import place_bp
 from api.user_controller import user_bp
 from api.review_controller import review_bp
-
+ 
 
 app = Flask(__name__)
 app.config["USE_DATABASE"] = os.getenv("USE_DATABASE", False)
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+mysqldb:///--"
 db = SQLAlchemy(app)
 
-with app.create_context():
-    db.create_all()
-    app.init_app(app)
+if app.config["USE_DATABASE"]:
+    db = SQLAlchemy(app)
+    with app.app_context():
+        db.create_all()
 
 app.register_blueprint(amenity_bp)
 app.register_blueprint(country_bp)
