@@ -6,6 +6,7 @@ from models.country import Country
 from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
+from SqlAlchemy_Manager import SqlAlchemyManager
 from app import app, db
 
 class DataManager(IPersistenceManager):
@@ -16,7 +17,7 @@ class DataManager(IPersistenceManager):
         try:
             if app.config['USE_DATABASE']:
                 if isinstance(entity, BaseModel):
-                    db.session.add(entity)
+                    SqlAlchemyManager.create(entity)
                 else:
                     raise TypeError()
             else:
@@ -37,7 +38,7 @@ class DataManager(IPersistenceManager):
     def get(self, entity_id, entity_type):
         try:
             if app.config['USE_DATABASE']:
-                pass
+                SqlAlchemyManager.read(entity_type, entity_id)
             else:
                 for user in DataManager.storage[f"{entity_type}"]:
                     if user["id"] == entity_id:
@@ -51,7 +52,7 @@ class DataManager(IPersistenceManager):
 
         try:
             if app.config['USE_DATABASE']:
-                pass
+                SqlAlchemyManager.update(entity)
             else:
                 class_type = f"{entity.__class__.__name__}"
                 print(entity.id)
@@ -68,7 +69,7 @@ class DataManager(IPersistenceManager):
     def delete(self, entity_id, entity_type):
         try:
             if app.config['USE_DATABASE']:
-                pass
+                SqlAlchemyManager.delete(entity_id)
             else:
                 DataManager.storage[f"{entity_type}"] = [user for user in DataManager.storage[f"{entity_type}"] if user["id"] != entity_id] 
         except Exception as e:
