@@ -15,11 +15,13 @@ from api.review_controller import review_bp
 
 
 app = Flask(__name__)
+app.config["USE_DATABASE"] = os.getenv("USE_DATABASE", False)
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+mysqldb:///--"
-db = SQLAlchemy()
+db = SQLAlchemy(app)
 
 with app.create_context():
     db.create_all()
+    app.init_app(app)
 
 app.register_blueprint(amenity_bp)
 app.register_blueprint(country_bp)
@@ -27,5 +29,4 @@ app.register_blueprint(city_bp)
 app.register_blueprint(place_bp)
 app.register_blueprint(user_bp)
 app.register_blueprint(review_bp)
-
 
