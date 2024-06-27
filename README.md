@@ -1,2 +1,2 @@
 # holbertonschool-hbnb-db
-Building a db for the HBnB project
+Building a the HBnB Clone, very interesting
