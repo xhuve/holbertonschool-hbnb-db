@@ -44,7 +44,7 @@ def create_user():
 
 @user_bp.route('/users/<int:user_id>', methods=['GET'])
 def get_user(user_id):
-    return dm.get(user_id, "User")
+    return dm.get(user_id, "Users")
 
 @user_bp.route('/users/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
