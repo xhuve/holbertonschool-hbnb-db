@@ -13,7 +13,8 @@ class DataManager(IPersistenceManager):
 
     storage = {}
 
-    def save(self, entity):
+    @staticmethod
+    def save(entity):
         try:
             if app.config['USE_DATABASE']:
                 if isinstance(entity, BaseModel):
@@ -35,18 +36,30 @@ class DataManager(IPersistenceManager):
         except TypeError:
             print("The argument should be an object")
 
-    def get(self, entity_id, entity_type):
+    @staticmethod
+    def all(entity_type):
         try:
             if app.config['USE_DATABASE']:
-                SqlAlchemyManager.read(entity_type, entity_id)
+                return SqlAlchemyManager.all(entity_type)
             else:
-                for user in DataManager.storage[f"{entity_type}"]:
+                return DataManager.storage[f"{entity_type.__class__.__name__}"]
+        except Exception as e:
+            print(e)
+
+    @staticmethod
+    def get(entity_id, entity_type):
+        try:
+            if app.config['USE_DATABASE']:
+                return SqlAlchemyManager.read(entity_type, entity_id)
+            else:
+                for user in DataManager.storage[f"{entity_type.__class__.__name__}"]:
                     if user["id"] == entity_id:
                         return user
         except Exception as e:
             print(e)
 
-    def update(self, entity):
+    @staticmethod
+    def update(entity):
         class EntityNotFoundError(Exception):
             pass
 
@@ -55,7 +68,6 @@ class DataManager(IPersistenceManager):
                 SqlAlchemyManager.update(entity)
             else:
                 class_type = f"{entity.__class__.__name__}"
-                print(entity.id)
                 for idx, user in enumerate(DataManager.storage[class_type]):
                     if user["id"] == entity.id:
                         DataManager.storage[class_type][idx] = entity.__dict__
@@ -66,12 +78,13 @@ class DataManager(IPersistenceManager):
         except Exception as e:
             print(e)
 
-    def delete(self, entity_id, entity_type):
+    @staticmethod
+    def delete(entity_id, entity_type):
         try:
             if app.config['USE_DATABASE']:
-                SqlAlchemyManager.delete(entity_id)
+                SqlAlchemyManager.delete(entity_id, entity_type)
             else:
-                DataManager.storage[f"{entity_type}"] = [user for user in DataManager.storage[f"{entity_type}"] if user["id"] != entity_id] 
+                DataManager.storage[f"{entity_type.__class__.__name__}"] = [user for user in DataManager.storage[f"{entity_type.__class__.__name__}"] if user["id"] != entity_id] 
         except Exception as e:
             print(e)
 

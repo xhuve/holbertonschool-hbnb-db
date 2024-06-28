@@ -9,12 +9,11 @@ from models.city import City
 from .country_controller import get_city_in_country
 
 
-dm = DataManager()
 city_bp = Blueprint("city_bp", __name__)
 
 @city_bp.route('/cities', methods=['GET'])
 def get_all_cities():
-    return DataManager.storage["City"]
+    return DataManager.all(City)
 
 @city_bp.route('/cities', methods=['POST'])
 def create_city():
@@ -32,17 +31,17 @@ def create_city():
         population=jData["population"],
         country_code=jData["country_code"]
     )
-    return dm.save(city), 201
+    return DataManager.save(city), 201
 
 @city_bp.route('/cities/<int:city_id>', methods=['GET'])
 def get_city(city_id):
-    curr_city = dm.get(city_id, "City")
-    return { "name": curr_city["name"], "country_code": curr_city["country_code"]}
+    curr_city = DataManager.get(city_id, City)
+    return { "name": curr_city["name"], "country_code": curr_city["country_code"] }
 
 @city_bp.route('/cities/<int:city_id>', methods=['PUT'])
 def update_city(city_id):
     jData = request.get_json()
-    req_city = dm.get(city_id, "City")
+    req_city = DataManager.get(city_id, City)
 
     city = City(
         name=jData['name'],
@@ -54,7 +53,7 @@ def update_city(city_id):
     city.created_at = req_city["created_at"]
 
     try:
-        dm.update(city)
+        DataManager.update(city)
         return jsonify("Updated")
     except Exception:
         return "Bad Request", 400
@@ -62,6 +61,6 @@ def update_city(city_id):
 
 @city_bp.route('/cities/<int:city_id>', methods=['DELETE'])
 def delete_cities(city_id):
-    dm.delete(city_id, "City")
+    DataManager.delete(city_id, City)
     return jsonify("Deleted"), 204
 
