@@ -6,7 +6,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 from flask import request, jsonify, Blueprint
 from persistence.data_manager import DataManager
 from models.city import City
-from .country_controller import get_city_in_country
 
 
 city_bp = Blueprint("city_bp", __name__)
@@ -21,6 +20,7 @@ def create_city():
     if not isinstance(jData["name"], str) or not isinstance(jData["population"], int):
         return jsonify("Bad Request"), 400
 
+    from .country_controller import get_city_in_country
     dictionary = get_city_in_country(jData["country_code"])
     for item in dictionary:
         if item["name"] == jData["name"]:

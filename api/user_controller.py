@@ -89,4 +89,3 @@ def get_user_reviews(user_id):
     user_reviews = [review for review in all_reviews if review["user_id"] == user_id]
 
     return jsonify(user_reviews), 200
-

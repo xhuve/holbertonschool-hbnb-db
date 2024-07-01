@@ -1,19 +1,18 @@
 import datetime
 import uuid
-from sqlalchemy import String, DateTime
-from sqlalchemy.orm import mapped_column, Mapped
-from app import app, db
-
-class BaseModel(db.Models):
-
-    if app.config['USE_DATABASE']:
+import os
+from sqlalchemy import String, DateTime, Column
+from db_init import db
+    
+if os.getenv('USE_DATABASE'):
+    class BaseModel(db.Model):
         __abstract__ = True
-
-        id: Mapped[String] = mapped_column(default=str(uuid.uuid4()), primary_key=True)
-        created_at: Mapped[DateTime] = mapped_column(default=datetime.datetime.now())
-        updated_at: Mapped[DateTime] = mapped_column(default=datetime.datetime.now(), onupdate=datetime.datetime.now())
-    else:
-        id = str(uuid.uuid4())
-        created_at = str(datetime.datetime.now())
-
-        updated_at = str(datetime.datetime.now())
+        id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+        created_at = Column(DateTime, default=datetime.datetime.now)
+        updated_at = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
+else:
+    class BaseModel:
+        def __init__(self):
+            self.id = str(uuid.uuid4())
+            self.created_at = str(datetime.datetime.now())
+            self.updated_at = str(datetime.datetime.now())

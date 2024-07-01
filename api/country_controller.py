@@ -1,7 +1,6 @@
 import sys
 import os
 
-from models.city import City
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
@@ -25,6 +24,7 @@ def get_city_in_country(country_code):
         if not country_code in city['code']:
             return jsonify("Bad Request"), 400
     
+    from  models.city import City
     all_cities = [value for value in DataManager.all(City) if value["country_code"] == country_code]
     return all_cities
 

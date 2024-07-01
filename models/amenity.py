@@ -1,11 +1,11 @@
-from models.base_model import BaseModel 
+import os
+from .base_model import BaseModel 
 from sqlalchemy import String
 from sqlalchemy.orm import relationship, mapped_column, Mapped
-from app import app, db
 
 class Amenity(BaseModel):
 
-    if app.config['USE_DATABASE']:
+    if os.getenv('USE_DATABASE'):
         __tablename__ = 'amenities'
         name: Mapped[String] = mapped_column(String(128), nullable=False)
         description: Mapped[String] = mapped_column(String(1024), nullable=True)
