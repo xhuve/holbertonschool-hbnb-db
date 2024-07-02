@@ -12,7 +12,6 @@ class Place(BaseModel):
     
         __tablename__ = 'places'
 
-        id: Mapped[String] = mapped_column(String(60), primary_key=True, autoincrement=True)
         name: Mapped[String] = mapped_column(String(128), nullable=False)
         description: Mapped[String | None] = mapped_column(String(1024), nullable=True)
         address: Mapped[String] = mapped_column(String(256), nullable=False)

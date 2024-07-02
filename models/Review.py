@@ -11,7 +11,6 @@ class Review(BaseModel):
 
         __tablename__ = 'reviews'
 
-        id: Mapped[Integer] = mapped_column(Integer, primary_key=True, autoincrement=True)
         feedback: Mapped[String] = mapped_column(String, nullable=False, default="")
         rating: Mapped[String] = mapped_column(String, nullable=False, default="")
         comment: Mapped[String] = mapped_column(String, nullable=True, default="")

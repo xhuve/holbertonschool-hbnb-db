@@ -4,11 +4,11 @@ from flask_jwt_extended import JWTManager
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
+from models import db
 
 load_dotenv()
 
 bcrypt = Bcrypt()
-db = SQLAlchemy()
 jwt = JWTManager()
 
 def create_app():
