@@ -2,16 +2,18 @@ import os
 from .base_model import BaseModel 
 from sqlalchemy import String
 from sqlalchemy.orm import relationship, mapped_column, Mapped
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class Amenity(BaseModel):
-
     if os.getenv('USE_DATABASE'):
         __tablename__ = 'amenities'
         name: Mapped[String] = mapped_column(String(128), nullable=False)
         description: Mapped[String] = mapped_column(String(1024), nullable=True)
         place_id = mapped_column(String(60), nullable=False)
 
-        place_amenities: Mapped[list[String]] = relationship("Place", back_populates='amenities')
+        place_amenities = relationship("Place", back_populates='amenities')
     else:
         amenity_list = set()
 

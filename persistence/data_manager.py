@@ -2,6 +2,9 @@ from persistence.IPersistenceManager import IPersistenceManager
 from models.base_model import BaseModel
 from .SqlAlchemy_Manager import SqlAlchemyManager
 from flask import current_app
+from create_app import db
+
+sqldb = SqlAlchemyManager(db)
 
 class DataManager(IPersistenceManager):
 
@@ -12,7 +15,7 @@ class DataManager(IPersistenceManager):
         try:
             if current_app.config['USE_DATABASE']:
                 if isinstance(entity, BaseModel):
-                    SqlAlchemyManager.create(entity)
+                    sqldb.create(entity)
                 else:
                     raise TypeError()
             else:
@@ -34,7 +37,7 @@ class DataManager(IPersistenceManager):
     def all(entity_type):
         try:
             if current_app.config['USE_DATABASE']:
-                return SqlAlchemyManager.all(entity_type)
+                return sqldb.all(entity_type)
             else:
                 return DataManager.storage[f"{entity_type.__class__.__name__}"]
         except Exception as e:
@@ -44,7 +47,7 @@ class DataManager(IPersistenceManager):
     def get(entity_id, entity_type):
         try:
             if current_app.config['USE_DATABASE']:
-                return SqlAlchemyManager.read(entity_type, entity_id)
+                return sqldb.read(entity_type, entity_id)
             else:
                 for user in DataManager.storage[f"{entity_type.__class__.__name__}"]:
                     if user["id"] == entity_id:
@@ -59,7 +62,7 @@ class DataManager(IPersistenceManager):
 
         try:
             if current_app.config['USE_DATABASE']:
-                SqlAlchemyManager.update(entity)
+                sqldb.update(entity)
             else:
                 class_type = f"{entity.__class__.__name__}"
                 for idx, user in enumerate(DataManager.storage[class_type]):
@@ -76,7 +79,7 @@ class DataManager(IPersistenceManager):
     def delete(entity_id, entity_type):
         try:
             if current_app.config['USE_DATABASE']:
-                SqlAlchemyManager.delete(entity_id, entity_type)
+                sqldb.delete(entity_id, entity_type)
             else:
                 DataManager.storage[f"{entity_type.__class__.__name__}"] = [user for user in DataManager.storage[f"{entity_type.__class__.__name__}"] if user["id"] != entity_id] 
         except Exception as e:

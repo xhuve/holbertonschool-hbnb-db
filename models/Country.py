@@ -1,19 +1,20 @@
+import os
 from models.base_model import BaseModel
 from sqlalchemy import String, Integer
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from models.city import City
-from app import app
+from sqlalchemy.orm import Mapped, mapped_column, relationship, declarative_base
+from dotenv import load_dotenv
 
+load_dotenv()
 
 class Country(BaseModel):
-    if app.config['USE_DATABASE']:
+    if os.getenv('USE_DATABASE'):
         __tablename__ = 'countries'
 
         name: Mapped[String] = mapped_column(String)
         population: Mapped[Integer] = mapped_column(Integer)
         code: Mapped[Integer] = mapped_column(String, unique=True)
 
-        cities: Mapped[list[City]] = relationship('City', back_populates="country")
+        cities = relationship('City', back_populates="country", uselist=True)
     else:
         all_country_codes = set()
 

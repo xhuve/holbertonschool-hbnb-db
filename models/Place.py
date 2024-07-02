@@ -2,14 +2,13 @@ from models.amenity import Amenity
 from models.base_model import BaseModel
 from sqlalchemy import String, Float, Integer, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from dotenv import load_dotenv
+import os
 
-from app import app
-from models.city import City
-from models.user import User
+load_dotenv()
 
-class Place(BaseModel):
-    
-    if app.config['USE_DATABASE']:
+class Place(BaseModel):    
+    if os.getenv('USE_DATABASE'):
     
         __tablename__ = 'places'
 
@@ -23,13 +22,13 @@ class Place(BaseModel):
         number_of_rooms: Mapped[Integer] = mapped_column(Integer, nullable=False)
         bathrooms: Mapped[Integer] = mapped_column(Integer, nullable=False)
         max_guests: Mapped[Integer] = mapped_column(Integer, nullable=False)
-        amenity_id: Mapped[list[String]] = mapped_column(list(Integer), ForeignKey("amenities.id"), nullable=True, unique=True)
-        city_id: Mapped[String] = mapped_column(Integer, ForeignKey("cities.id"), nullable=True)
-        host_id: Mapped[String] = mapped_column(Integer, ForeignKey("users.id"), nullable=True)
+        amenity_id: Mapped[Integer] = mapped_column(Integer, ForeignKey("amenities.id"), nullable=True, unique=True)
+        city_id: Mapped[Integer] = mapped_column(Integer, ForeignKey("cities.id"), nullable=True)
+        host_id: Mapped[Integer] = mapped_column(Integer, ForeignKey("users.id"), nullable=True)
 
-        amenities: Mapped[list[Amenity]] = relationship("Amenity", back_populates="place_amenities")
-        city: Mapped[City] = relationship("City", back_populates="user")
-        host: Mapped[User] = relationship("User", back_populates="user")
+        amenities = relationship("Amenity", back_populates="place_amenities", uselist=True, foreign_keys="[Place.amenity_id]")
+        city = relationship("City", back_populates="places", foreign_keys="[Place.city_id]")
+        user = relationship("User", back_populates="places", foreign_keys="[Place.host_id]")
     else: 
         def __init__(self, obj_id=None, name="", description="", address="", longitude=0.0, latitude=0.0, price_per_night=0.0, number_of_rooms=0, bathrooms=0, max_guests=0, amenity_id=(), city_id="", host_id=""):
             super().__init__()

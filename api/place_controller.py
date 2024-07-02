@@ -1,45 +1,41 @@
 import sys
 import os
 
-from models.user import User
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 from flask import request, jsonify, Blueprint
 from persistence.data_manager import DataManager
+from models.user import User
 from models.place import Place
 from models.review import Review
 from models.city import City
 from models.amenity import Amenity
-from app import app
-
 
 place_bp = Blueprint('place_bp', __name__)
 
 @place_bp.route('/places', methods=['GET'])
 def get_all_places():
-    return DataManager.all(Place)
+    return jsonify(DataManager.all(Place))
 
 @place_bp.route('/places', methods=['POST'])
 def create_place():
     jData = request.get_json()
-    if not -90 < jData["latitude"] < 90 or not isinstance(jData["price_per_night"], float):
-        print("latitude error")
+    if not (-90 < jData["latitude"] < 90) or not isinstance(jData["price_per_night"], float):
         return jsonify("Bad Request"), 400
+
     for field in ['number_of_rooms', 'bathrooms', 'max_guests']:
         if jData[field] < 0:
             return jsonify("Bad Request"), 400
 
-    amenity_ids = jData.get("amenity_ids", [])
+    amenity_ids = jData.get("amenity_id", [])
     if not all(isinstance(amenity_id, int) for amenity_id in amenity_ids):
         return jsonify("Bad Request"), 400
 
-    all_city_id = [value for value in DataManager.all(City) if value["id"] == jData["city_id"]]
-    if not all_city_id:
-        return jsonify("Bad Request"), 400
+    if not DataManager.get(jData["city_id"], City):
+        return jsonify("City does not exist"), 400
 
-    all_amenity_id = [value for value in DataManager.all(Amenity) if value["id"] in jData["amenity_id"]]
-    if not all_amenity_id:
-        return jsonify("Bad Request"), 400
+    if any(not DataManager.all(Amenity) for _ in amenity_ids):
+        return jsonify("One or more amenities do not exist"), 400
 
     place = Place(
         name = jData['name'],

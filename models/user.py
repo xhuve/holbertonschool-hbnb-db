@@ -1,15 +1,17 @@
+import os
 from models.base_model import BaseModel 
 from sqlalchemy import String, Integer, ForeignKey, Boolean
-from sqlalchemy.orm import relationship, Mapped, mapped_column
-from flask_bcrypt import Bcrypt
-from app import app
+from sqlalchemy.orm import relationship, Mapped, mapped_column, declarative_base
+from flask_bcrypt import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
 
-bcrypt = Bcrypt(app)
-class User(BaseModel):
+load_dotenv()
 
-    if app.config['USE_DATABASE']:
-        from models.place import Place
-        from models.review import Review
+Base = declarative_base()
+
+class User(BaseModel, Base):
+
+    if os.getenv('USE_DATABASE'):
         
         __tablename__ = 'users'
 
@@ -18,14 +20,13 @@ class User(BaseModel):
         password: Mapped[str] = mapped_column(String(255), nullable=False)
         first_name: Mapped[str | None] = mapped_column(String(128), nullable=False)
         last_name: Mapped[str | None] = mapped_column(String(128), nullable=True)
-        review_id: Mapped[int | None] = mapped_column(Integer, ForeignKey('reviews.id'), nullable=True)
-        place_id: Mapped[int | None] = mapped_column(Integer, ForeignKey('places.id'), nullable=True)
+        city_id: Mapped[int | None] = mapped_column(Integer, ForeignKey('cities.id'), nullable=True)
         password_hash: Mapped[String] = mapped_column(String(128))
         is_admin = mapped_column(Boolean, default=False)
 
-
-        reviews: Mapped[list[Review]] = relationship("Review", back_populates="user")
-        places: Mapped[Place] = relationship("Place", back_populates="user")
+        city = relationship("City", back_populates="user", foreign_keys="[User.city_id]")
+        reviews = relationship("Review", back_populates="user", uselist=True)
+        places= relationship("Place", back_populates="user")
 
     else:
 
@@ -40,10 +41,11 @@ class User(BaseModel):
             self.last_name = last_name
             self.review_id = review_id
             self.place_id = place_id
+            self.is_admin= is_admin
 
 
     def set_password(self, password):
-        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+        self.password_hash = generate_password_hash(password).decode('utf-8')
 
     def check_password(self, password):
-        return bcrypt.check_password_hash(self.password_hash, password)
+        return check_password_hash(self.password_hash, password)

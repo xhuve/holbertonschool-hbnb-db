@@ -1,31 +1,26 @@
-from db_init import db
-
 class SqlAlchemyManager:
+    def __init__(self, db_instance):
+        self.db = db_instance
+
+    def create(self, obj):
+        self.db.session.add(obj)
+        self.db.session.commit()
     
-    @staticmethod
-    def create(obj):
-        db.session.add(obj)
-        db.session.commit()
-    
-    @staticmethod
-    def all(model):
+    def all(self, model):
         query = model.query.all()
         return query
 
-    @staticmethod
-    def read(model, id):
+    def read(self, model, id):
         query = model.query.filter_by(model.id == id)
         result = query.all()
         return result
     
-    @staticmethod
-    def update(obj):
-        db.session.merge(obj)
-        db.session.commit()
+    def update(self, obj):
+        self.db.session.merge(obj)
+        self.db.session.commit()
 
-    @staticmethod
-    def delete(model, id):
+    def delete(self, model, id):
         obj = model.query.filter_by(id == id).first()
         if obj:
-            db.session.delete(obj)
-            db.session.commit()
+            self.db.session.delete(obj)
+            self.db.session.commit()

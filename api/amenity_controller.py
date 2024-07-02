@@ -33,7 +33,10 @@ def create_amenity():
 
 @amenity_bp.route('/amenities/<int:amenity_id>', methods=['GET'])
 def get_amenity(amenity_id):
-    return DataManager.get(amenity_id, Amenity)
+    amenity = DataManager.get(amenity_id, Amenity)
+    if not amenity:
+        return jsonify({"error": "Amenity not found"}), 404
+    return jsonify(amenity), 200
 
 @amenity_bp.route('/amenities/<int:amenity_id>', methods=['PUT'])
 def update_amenity(amenity_id):

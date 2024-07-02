@@ -2,8 +2,11 @@ import datetime
 import uuid
 import os
 from sqlalchemy import String, DateTime, Column
-from db_init import db
-    
+from . import db
+from dotenv import load_dotenv
+
+load_dotenv()
+
 if os.getenv('USE_DATABASE'):
     class BaseModel(db.Model):
         __abstract__ = True

@@ -1,13 +1,13 @@
 from models.base_model import BaseModel
 from sqlalchemy import Integer, String, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship, declarative_base
+import os
+from dotenv import load_dotenv
 
-from app import app
-from models.user import User
+load_dotenv()
 
 class Review(BaseModel):
-
-    if app.config['USE_DATABASE']:
+    if os.getenv('USE_DATABASE'):
 
         __tablename__ = 'reviews'
 
@@ -18,7 +18,7 @@ class Review(BaseModel):
         place_id: Mapped[Integer | None] = mapped_column(Integer, ForeignKey('places.id'), nullable=True)
         user_id: Mapped[Integer | None] = mapped_column(Integer, ForeignKey('users.id'), nullable=True)
 
-        user: Mapped[User] = relationship("User", back_populates="reviews")
+        user = relationship("User", back_populates="reviews", foreign_keys="[Review.user_id]")
     
     else:
         def __init__(self, obj_id=None, feedback="", rating="", comment="", place_id=None, user_id=None):
