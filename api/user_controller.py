@@ -1,6 +1,8 @@
 import sys
 import os
 
+from flask_jwt_extended import get_jwt_identity, jwt_required
+
 from models.review import Review
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
@@ -20,37 +22,46 @@ def checkEmail(email):
         print(str(e))
         return False
 
-@user_bp.route('/users', methods=['GET'])
+@user_bp.route('/users', methods=['GET'], endpoint='get_all_users')
 def get_all_users():
     return DataManager.all(User)
 
-@user_bp.route('/users', methods=['POST'])
+@user_bp.route('/users', methods=['POST'], endpoint='create_user')
+# @jwt_required
 def create_user():
+    # curr_user = get_jwt_identity()
+    # if not curr_user.is_admin:
+    #     return jsonify("User does not have admin privileges"), 403
+
     jData = request.get_json()
     for field in ["email", "first_name", "last_name"]:
         if not isinstance(jData[field], str):
             return jsonify("Bad Request"), 400
     if not checkEmail(jData["email"]):
         return jsonify("Bad Request"), 400
-    if jData["email"] in User.email_list:
+    if not os.getenv("USE_DATABASE") and jData["email"] in User.email_list:
         return jsonify("Conflict"), 409
 
     user = User(
         email=jData["email"],
-        password="",
+        password=jData["password"],
         first_name=jData["first_name"],
         last_name=jData["last_name"],
-        review_id=jData["review_id"],
-        place_id=jData["place_id"]
+        city_id=jData["city_id"]
     )
     return DataManager.save(user), 201
 
-@user_bp.route('/users/<int:user_id>', methods=['GET'])
+@user_bp.route('/users/<int:user_id>', methods=['GET'], endpoint='get_user')
 def get_user(user_id):
     return DataManager.get(user_id, User)
 
-@user_bp.route('/users/<int:user_id>', methods=['PUT'])
+@user_bp.route('/users/<int:user_id>', methods=['PUT'], endpoint='update_user')
+@jwt_required
 def update_user(user_id):
+    curr_user = get_jwt_identity()
+    if not curr_user.is_admin:
+        return jsonify("User does not have admin privileges"), 403
+
     jData = request.get_json()
     req_user = DataManager.get(user_id, User)
 
@@ -74,12 +85,17 @@ def update_user(user_id):
     except Exception:
         return "Bad Request", 400
 
-@user_bp.route('/users/<int:user_id>', methods=['DELETE'])
+@user_bp.route('/users/<int:user_id>', methods=['DELETE'], endpoint='delete_user')
+@jwt_required
 def delete_user(user_id):
+    curr_user = get_jwt_identity()
+    if not curr_user.is_admin:
+        return jsonify("User does not have admin privileges"), 403
+
     DataManager.delete(user_id, User)
     return jsonify("Deleted"), 204
 
-@user_bp.route('/users/<int:user_id>/reviews', methods=['GET'])
+@user_bp.route('/users/<int:user_id>/reviews', methods=['GET'], endpoint='get_user_reviews')
 def get_user_reviews(user_id):
     all_reviews = DataManager.all(Review)
 

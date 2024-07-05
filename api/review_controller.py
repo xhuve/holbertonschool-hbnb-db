@@ -38,3 +38,6 @@ def put_review(review_id):
 def delete_user(review_id):
     DataManager.delete(review_id, Review)
     return jsonify("Deleted"), 204
+
+
+

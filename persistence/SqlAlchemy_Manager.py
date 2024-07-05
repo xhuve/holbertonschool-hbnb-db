@@ -11,16 +11,15 @@ class SqlAlchemyManager:
         return query
 
     def read(self, model, id):
-        query = model.query.filter_by(model.id == id)
-        result = query.all()
-        return result
+        query = model.query.filter_by(id=id).all()
+        return query
     
     def update(self, obj):
         self.db.session.merge(obj)
         self.db.session.commit()
 
     def delete(self, model, id):
-        obj = model.query.filter_by(id == id).first()
+        obj = model.query.filter_by(id=id).first()
         if obj:
             self.db.session.delete(obj)
             self.db.session.commit()

@@ -15,13 +15,12 @@ class User(BaseModel, Base):
         
         __tablename__ = 'users'
 
-        email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
-        password: Mapped[str] = mapped_column(String(255), nullable=False)
-        first_name: Mapped[str | None] = mapped_column(String(128), nullable=False)
-        last_name: Mapped[str | None] = mapped_column(String(128), nullable=True)
-        city_id: Mapped[int | None] = mapped_column(Integer, ForeignKey('cities.id'), nullable=True)
-        password_hash: Mapped[String] = mapped_column(String(128))
-        is_admin = mapped_column(Boolean, default=False)
+        email: Mapped[String] = mapped_column(String(255), nullable=False, unique=True)
+        password: Mapped[String] = mapped_column(String(255), nullable=False)
+        first_name: Mapped[String | None] = mapped_column(String(128), nullable=False)
+        last_name: Mapped[String | None] = mapped_column(String(128), nullable=True)
+        city_id: Mapped[Integer] = mapped_column(Integer, ForeignKey('cities.id'), nullable=True)
+        is_admin: Mapped[Boolean] = mapped_column(Boolean, default=False)  # Changed to Boolean
 
         city = relationship("City", back_populates="user", foreign_keys="[User.city_id]")
         reviews = relationship("Review", back_populates="user", uselist=True)

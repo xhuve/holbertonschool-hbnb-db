@@ -2,7 +2,6 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_bcrypt import Bcrypt
-from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 from models import db
 
@@ -17,7 +16,7 @@ def create_app():
     app = Flask(__name__)
     app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET_KEY")
     app.config["USE_DATABASE"] = os.getenv("USE_DATABASE", False)
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///in-memory"
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DB_FLAVOUR", "sqlite:///in-memory")
 
     bcrypt.init_app(app)
     db.init_app(app)
@@ -40,7 +39,5 @@ def create_app():
             app.register_blueprint(place_bp)
             app.register_blueprint(user_bp)
             app.register_blueprint(review_bp)
-
-
 
     return app, db, jwt

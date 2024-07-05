@@ -1,6 +1,8 @@
 import sys
 import os
 
+from flask_jwt_extended import get_jwt_identity, jwt_required
+
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 from flask import request, jsonify, Blueprint
@@ -17,9 +19,22 @@ place_bp = Blueprint('place_bp', __name__)
 def get_all_places():
     return jsonify(DataManager.all(Place))
 
+@place_bp.route('/places/<int:place_id>', methods=['GET'])
+def get_place(place_id):
+    return DataManager.get(place_id, Place)
+
 @place_bp.route('/places', methods=['POST'])
+@jwt_required
 def create_place():
+    curr_user = get_jwt_identity()
+    if not curr_user.is_admin:
+        return jsonify("User does not have admin privileges"), 403
+
     jData = request.get_json()
+
+    if jData["host_id"] != curr_user.id:
+        return jsonify("Ownership error")
+
     if not (-90 < jData["latitude"] < 90) or not isinstance(jData["price_per_night"], float):
         return jsonify("Bad Request"), 400
 
@@ -54,15 +69,17 @@ def create_place():
 
     return DataManager.save(place), 201
 
-@place_bp.route('/places/<int:place_id>', methods=['GET'])
-def get_place(place_id):
-    return DataManager.get(place_id, Place)
-
-@place_bp.route('/places/<int:place_id>', methods=['PUT'])
+@place_bp.route('/places/<int:place_id>', methods=['PUT'], endpoint='update_place')
+@jwt_required
 def update_place(place_id):
+    curr_user = get_jwt_identity()
+    if not curr_user.is_admin:
+        return jsonify("User does not have admin privileges"), 403
+
     jData = request.get_json()
     if not -90 < jData["latitude"] < 90 or not isinstance(jData["price_per_night"], int):
         return jsonify("Bad Request"), 400
+
     for field in ['number_of_rooms', 'bathrooms', 'max_guests']:
         if jData[field] < 0:
             return jsonify("Bad Request"), 400
@@ -99,12 +116,18 @@ def update_place(place_id):
     except Exception:
         return jsonify("Bad Request"), 400
 
-@place_bp.route('/places/<int:place_id>', methods=['DELETE'])
+@place_bp.route('/places/<int:place_id>', methods=['DELETE'], endpoint='delete_place')
+@jwt_required
 def delete_place(place_id):
+    curr_user = get_jwt_identity()
+    if not curr_user.is_admin:
+        return jsonify("User does not have admin privileges"), 403
+
     DataManager.delete(place_id, Place)
     return jsonify("Deleted"), 204
 
-@place_bp.route("/places/<int:place_id>/reviews", methods=['POST'])
+@place_bp.route("/places/<int:place_id>/reviews", methods=['POST'], endpoint='create_review')
+@jwt_required
 def create_review(place_id):
     jData = request.get_json()
 
@@ -118,7 +141,7 @@ def create_review(place_id):
 
     return DataManager.save(review), 201
 
-@place_bp.route("/places/<int:place_id>/reviews", methods=['GET'])
+@place_bp.route("/places/<int:place_id>/reviews", methods=['GET'], endpoint='get_place_reviews')
 def get_place_reviews(place_id):
     all_reviews = DataManager.all(Review)
 
@@ -128,3 +151,16 @@ def get_place_reviews(place_id):
     user_reviews = [review for review in all_reviews if review["place_id"] == place_id]
 
     return jsonify(user_reviews), 200
+
+@place_bp.put("/places/<place_id>/reviews", endpoint='put_place_review')
+@jwt_required
+def put_place_review(place_id):
+    curr_user = get_jwt_identity()
+    all_reviews = DataManager.all(Review)
+
+    req_review = [review for review in all_reviews if review["place_id"] == place_id and review["user_id"] == curr_user.id]
+
+    if not req_review:
+        return jsonify({"error": "Review not found"}), 404
+
+    return jsonify(req_review), 200
