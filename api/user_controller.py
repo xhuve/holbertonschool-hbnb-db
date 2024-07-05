@@ -24,7 +24,10 @@ def checkEmail(email):
 
 @user_bp.route('/users', methods=['GET'], endpoint='get_all_users')
 def get_all_users():
-    return DataManager.all(User)
+    allUsers = DataManager.all(User)
+    if allUsers:
+        return jsonify([value.to_dict() for value in allUsers])
+    return jsonify("No users")
 
 @user_bp.route('/users', methods=['POST'], endpoint='create_user')
 # @jwt_required
@@ -47,13 +50,15 @@ def create_user():
         password=jData["password"],
         first_name=jData["first_name"],
         last_name=jData["last_name"],
-        city_id=jData["city_id"]
+        city_id=jData.get("city_id", None),
+        is_admin=jData.get("is_admin", False)
     )
-    return DataManager.save(user), 201
+    DataManager.save(user)
+    return jsonify(user.to_dict()), 201
 
 @user_bp.route('/users/<int:user_id>', methods=['GET'], endpoint='get_user')
 def get_user(user_id):
-    return DataManager.get(user_id, User)
+    return jsonify(DataManager.get(user_id, User).to_dict())
 
 @user_bp.route('/users/<int:user_id>', methods=['PUT'], endpoint='update_user')
 @jwt_required
@@ -82,8 +87,8 @@ def update_user(user_id):
     try:
         DataManager.update(user)
         return jsonify("Updated")
-    except Exception:
-        return "Bad Request", 400
+    except Exception as e:
+        return jsonify("Could not update user: ", e), 400
 
 @user_bp.route('/users/<int:user_id>', methods=['DELETE'], endpoint='delete_user')
 @jwt_required
@@ -93,7 +98,7 @@ def delete_user(user_id):
         return jsonify("User does not have admin privileges"), 403
 
     DataManager.delete(user_id, User)
-    return jsonify("Deleted"), 204
+    return jsonify("User deleted"), 204
 
 @user_bp.route('/users/<int:user_id>/reviews', methods=['GET'], endpoint='get_user_reviews')
 def get_user_reviews(user_id):
@@ -102,6 +107,6 @@ def get_user_reviews(user_id):
     if not user_id in [value["id"] for value in DataManager.all(User)]:
         return jsonify("User not found"), 404
 
-    user_reviews = [review for review in all_reviews if review["user_id"] == user_id]
+    user_reviews = [review.to_dict() for review in all_reviews if review["user_id"] == user_id]
 
     return jsonify(user_reviews), 200

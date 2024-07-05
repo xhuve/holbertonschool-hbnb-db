@@ -25,3 +25,13 @@ class City(BaseModel, Base):
             self.name = name
             self.population = population
             self.country_code = country_code
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at,
+            'name': self.name,
+            'population': self.population,
+            'country_id': self.country_id
+        }

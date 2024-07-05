@@ -32,6 +32,8 @@ class DataManager(IPersistenceManager):
                     raise TypeError()
         except TypeError:
             print("The argument should be an object")
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def all(entity_type):

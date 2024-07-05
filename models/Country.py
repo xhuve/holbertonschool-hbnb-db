@@ -24,3 +24,13 @@ class Country(BaseModel):
             self.population = population
             self.code = code
             self.all_country_codes.add(code)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at,
+            'name': self.name,
+            'population': self.population,
+            'code': self.code
+        }

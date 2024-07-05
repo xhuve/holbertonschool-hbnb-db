@@ -23,3 +23,13 @@ class Amenity(BaseModel):
             self.description = description
             self.place_id = place_id
             self.amenity_list.add(name)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at,
+            'name': self.name,
+            'description': self.description,
+            'place_id': self.place_id
+        }

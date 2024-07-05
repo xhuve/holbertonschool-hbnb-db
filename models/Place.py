@@ -45,3 +45,20 @@ class Place(BaseModel):
             self.amenity_id = amenity_id
             self.city_id = city_id
             self.host_id = host_id
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'address': self.address,
+            'longitude': self.longitude,
+            'latitude': self.latitude,
+            'price_per_night': self.price_per_night,
+            'number_of_rooms': self.number_of_rooms,
+            'bathrooms': self.bathrooms,
+            'max_guests': self.max_guests,
+            'amenity_id': self.amenity_id,
+            'city_id': self.city_id,
+            'host_id': self.host_id
+        }

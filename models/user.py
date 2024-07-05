@@ -21,6 +21,7 @@ class User(BaseModel, Base):
         last_name: Mapped[String | None] = mapped_column(String(128), nullable=True)
         city_id: Mapped[Integer] = mapped_column(Integer, ForeignKey('cities.id'), nullable=True)
         is_admin: Mapped[Boolean] = mapped_column(Boolean, default=False)  # Changed to Boolean
+        
 
         city = relationship("City", back_populates="user", foreign_keys="[User.city_id]")
         reviews = relationship("Review", back_populates="user", uselist=True)
@@ -30,15 +31,14 @@ class User(BaseModel, Base):
 
         email_list = set()
 
-        def __init__(self, email='', password='', first_name='', last_name='', review_id=[], place_id=[], is_admin=False):
+        def __init__(self, email='', password='', first_name='', last_name='', city_id=None, is_admin=False):
             super().__init__()
             self.email = email
             User.email_list.add(email)
             self.password = password
             self.first_name = first_name
             self.last_name = last_name
-            self.review_id = review_id
-            self.place_id = place_id
+            self.city_id = city_id
             self.is_admin= is_admin
 
 
@@ -47,3 +47,12 @@ class User(BaseModel, Base):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    
+    def to_dict(self):
+            return {
+                'id': self.id,
+                'email': self.email,
+                'first_name': self.first_name,
+                'last_name': self.last_name,
+                'is_admin': self.is_admin
+            }
