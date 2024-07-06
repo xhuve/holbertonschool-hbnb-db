@@ -7,7 +7,7 @@ review_bp = Blueprint("review_bp", __name__)
 
 @review_bp.route("/reviews/<int:review_id>", methods=['GET'])
 def get_review(review_id):
-    return DataManager.get(review_id, Review)
+    return jsonify(DataManager.get(review_id, Review).to_dict())
 
 @review_bp.route("/reviews/<int:review_id>", methods=['PUT'])
 def put_review(review_id):

@@ -1,5 +1,5 @@
 from persistence.IPersistenceManager import IPersistenceManager
-from models.base_model import BaseModel
+from persistence.StorageManager import LocalStorage
 from .SqlAlchemy_Manager import SqlAlchemyManager
 from flask import current_app
 from create_app import db
@@ -14,22 +14,9 @@ class DataManager(IPersistenceManager):
     def save(entity):
         try:
             if current_app.config['USE_DATABASE']:
-                if isinstance(entity, BaseModel):
-                    sqldb.create(entity)
-                else:
-                    raise TypeError()
+                sqldb.create(entity)
             else:
-                if isinstance(entity, BaseModel):
-                    user = entity.__dict__
-                    class_type = entity.__class__.__name__
-
-                    if class_type in DataManager.storage.keys():
-                        DataManager.storage[class_type].append(user)
-                    else:
-                        DataManager.storage[class_type] = [user]
-                    return user
-                else:
-                    raise TypeError()
+                LocalStorage.create(entity)
         except TypeError:
             print("The argument should be an object")
         except Exception as e:
@@ -41,7 +28,7 @@ class DataManager(IPersistenceManager):
             if current_app.config['USE_DATABASE']:
                 return sqldb.all(entity_type)
             else:
-                return DataManager.storage[f"{entity_type.__class__.__name__}"]
+                return LocalStorage.all(entity_type)
         except Exception as e:
             print(e)
 
@@ -51,9 +38,7 @@ class DataManager(IPersistenceManager):
             if current_app.config['USE_DATABASE']:
                 return sqldb.read(entity_type, entity_id)
             else:
-                for user in DataManager.storage[f"{entity_type.__class__.__name__}"]:
-                    if user["id"] == entity_id:
-                        return user
+                return LocalStorage.read(entity_type, entity_id)
         except Exception as e:
             print(e)
 
@@ -66,12 +51,7 @@ class DataManager(IPersistenceManager):
             if current_app.config['USE_DATABASE']:
                 sqldb.update(entity)
             else:
-                class_type = f"{entity.__class__.__name__}"
-                for idx, user in enumerate(DataManager.storage[class_type]):
-                    if user["id"] == entity.id:
-                        DataManager.storage[class_type][idx] = entity.__dict__
-                        return entity.__dict__
-                raise EntityNotFoundError("Bad Request")
+                LocalStorage.update(entity)
         except EntityNotFoundError as e:
             raise e
         except Exception as e:
@@ -83,7 +63,7 @@ class DataManager(IPersistenceManager):
             if current_app.config['USE_DATABASE']:
                 sqldb.delete(entity_id, entity_type)
             else:
-                DataManager.storage[f"{entity_type.__class__.__name__}"] = [user for user in DataManager.storage[f"{entity_type.__class__.__name__}"] if user["id"] != entity_id] 
+                LocalStorage.delete(entity_id, entity_type)
         except Exception as e:
             print(e)
 

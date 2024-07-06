@@ -17,7 +17,6 @@ def create_app():
     app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET_KEY")
     app.config["USE_DATABASE"] = os.getenv("USE_DATABASE", False)
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DB_FLAVOUR", "sqlite:///in-memory")
-    app.config['SQLALCHEMY_ECHO'] = True
 
     bcrypt.init_app(app)
     db.init_app(app)
@@ -27,11 +26,8 @@ def create_app():
     if app.config["USE_DATABASE"]:
         with app.app_context():
             db.drop_all()
-
             db.create_all()
-            result = db.session.execute(text("PRAGMA table_info(users);"))
-            for row in result:
-                print(row)
+
             from api.amenity_controller import amenity_bp
             from api.country_controller import country_bp
             from api.city_controller import city_bp

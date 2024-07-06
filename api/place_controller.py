@@ -17,11 +17,14 @@ place_bp = Blueprint('place_bp', __name__)
 
 @place_bp.route('/places', methods=['GET'])
 def get_all_places():
-    return jsonify(DataManager.all(Place))
+    allPlaces = DataManager.all(Place)
+    if allPlaces:
+        return jsonify([value.to_dict() for value in allPlaces])
+    return jsonify("No places")
 
 @place_bp.route('/places/<int:place_id>', methods=['GET'])
 def get_place(place_id):
-    return DataManager.get(place_id, Place)
+    return jsonify(DataManager.get(place_id, Place).to_dict())
 
 @place_bp.route('/places', methods=['POST'])
 @jwt_required
@@ -67,7 +70,8 @@ def create_place():
         host_id = jData["host_id"]
     )
 
-    return DataManager.save(place), 201
+    DataManager.save(place)
+    return jsonify(place.to_dict()), 201
 
 @place_bp.route('/places/<int:place_id>', methods=['PUT'], endpoint='update_place')
 @jwt_required
@@ -139,7 +143,8 @@ def create_review(place_id):
         user_id = jData["user_id"]
     )
 
-    return DataManager.save(review), 201
+    DataManager.save(review)
+    return jsonify(review.to_dict()), 201
 
 @place_bp.route("/places/<int:place_id>/reviews", methods=['GET'], endpoint='get_place_reviews')
 def get_place_reviews(place_id):

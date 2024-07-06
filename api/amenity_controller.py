@@ -13,7 +13,10 @@ amenity_bp = Blueprint("amenity", __name__)
 
 @amenity_bp.route('/amenities', methods=['GET'], endpoint="func1")
 def get_all_amenities():
-    return DataManager.all(Amenity)
+    allAmenities = DataManager.all(Amenity)
+    if allAmenities:
+        return jsonify([value.to_dict() for value in allAmenities])
+    return jsonify("No amenities")
 
 @amenity_bp.route('/amenities', methods=['POST'], endpoint="func2")
 @jwt_required
@@ -36,11 +39,12 @@ def create_amenity():
         description=jData["description"],
         place_id=jData["place_id"]
     )
-    return DataManager.save(amenity), 201
+    DataManager.save(amenity)
+    return jsonify(amenity.to_dict()), 201
 
-@amenity_bp.route('/amenities/<int:amenity_id>', methods=['GET'], endpoint="func3")
+@amenity_bp.route('/amenities/<int:amenity_id>', methods=['GET'], endpoint="get_amenity")
 def get_amenity(amenity_id):
-    amenity = DataManager.get(amenity_id, Amenity)
+    amenity = DataManager.get(amenity_id, Amenity).to_dict()
     if not amenity:
         return jsonify({"error": "Amenity not found"}), 404
     return jsonify(amenity), 200

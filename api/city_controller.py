@@ -14,7 +14,10 @@ city_bp = Blueprint("city_bp", __name__)
 
 @city_bp.route('/cities', methods=['GET'], endpoint="get_all_cities")
 def get_all_cities():
-    return DataManager.all(City)
+    allCities = DataManager.all(City)
+    if allCities:
+        return jsonify([value.to_dict() for value in allCities])
+    return jsonify("No cities")
 
 @city_bp.route('/cities', methods=['POST'], endpoint="create_city")
 @jwt_required
@@ -38,7 +41,8 @@ def create_city():
         population=jData["population"],
         country_code=jData["country_code"]
     )
-    return DataManager.save(city), 201
+    DataManager.save(city)
+    return jsonify(city.to_dict()), 201
 
 @city_bp.route('/cities/<int:city_id>', methods=['GET'], endpoint="get_city")
 def get_city(city_id):

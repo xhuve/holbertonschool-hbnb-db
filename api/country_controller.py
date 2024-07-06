@@ -12,11 +12,14 @@ country_bp = Blueprint("country", __name__)
 
 @country_bp.route('/countries', methods=['GET'])
 def get_all_countries():
-    return DataManager.all(Country)
+    allCountries = DataManager.all(Country)
+    if allCountries:
+        return jsonify([value.to_dict() for value in allCountries])
+    return jsonify("No countries")
 
 @country_bp.route('/countries/<int:country_id>', methods=['GET'])
 def get_country(country_id):
-    return DataManager.get(country_id, Country)
+    return jsonify(DataManager.get(country_id, Country).to_dict())
 
 @country_bp.route("/countries/<string:country_code>/cities", methods=['GET'])
 def get_city_in_country(country_code):

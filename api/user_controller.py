@@ -22,6 +22,10 @@ def checkEmail(email):
         print(str(e))
         return False
 
+@user_bp.route('/users/<int:user_id>', methods=['GET'], endpoint='get_user')
+def get_user(user_id):
+    return jsonify(DataManager.get(user_id, User).to_dict())
+
 @user_bp.route('/users', methods=['GET'], endpoint='get_all_users')
 def get_all_users():
     allUsers = DataManager.all(User)
@@ -30,11 +34,11 @@ def get_all_users():
     return jsonify("No users")
 
 @user_bp.route('/users', methods=['POST'], endpoint='create_user')
-# @jwt_required
+@jwt_required
 def create_user():
-    # curr_user = get_jwt_identity()
-    # if not curr_user.is_admin:
-    #     return jsonify("User does not have admin privileges"), 403
+    curr_user = get_jwt_identity()
+    if not curr_user.is_admin:
+        return jsonify("User does not have admin privileges"), 403
 
     jData = request.get_json()
     for field in ["email", "first_name", "last_name"]:
@@ -56,9 +60,6 @@ def create_user():
     DataManager.save(user)
     return jsonify(user.to_dict()), 201
 
-@user_bp.route('/users/<int:user_id>', methods=['GET'], endpoint='get_user')
-def get_user(user_id):
-    return jsonify(DataManager.get(user_id, User).to_dict())
 
 @user_bp.route('/users/<int:user_id>', methods=['PUT'], endpoint='update_user')
 @jwt_required
